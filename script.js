@@ -2,6 +2,7 @@
 function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
+  console.log("Hello");
 }
 
 function makePageForEpisodes(episodeList) {
