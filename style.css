@@ -1,3 +1,33 @@
-#root {
-  color: red;
+* {
+  box-sizing: border-box;
+}
+
+li {
+  list-style: none;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+}
+
+.item {
+  padding: 2rem;
+}
+
+.inside {
+  box-shadow: -3px 6px 23px -8px rgba(127, 127, 127, 0.9);
+}
+
+.list-of-episodes {
+  padding: 0;
+  text-align: center;
+}
+
+.episode-summary {
+  padding: 2rem;
+}
+
+.episode-title {
+  padding: 1rem;
 }
