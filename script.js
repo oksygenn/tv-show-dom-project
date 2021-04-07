@@ -1,23 +1,18 @@
 // let showContainer;
-let shows = getAllShows();
+let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul
 let allEpisodes;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
-
-const filteredShows = shows.sort((a, b) => a.name.localeCompare(b.name));
-//.map((show) => show.name).sort();
-
-console.log(filteredShows);
 
 const generateUrl = (id) => {
   return `https://api.tvmaze.com/shows/${id}/episodes`;
 };
 
 const setup = () => {
-  renderShowOptions(filteredShows);
   setupControls();
-  startFetching(generateUrl(filteredShows[0].id));
+  renderShowOptions(shows);
+  startFetching(generateUrl(shows[0].id));
 };
 
 const setupControls = () => {
@@ -77,36 +72,44 @@ const startFetching = (url) => {
     });
 };
 
-// function which takes a list of episodes, creates html tags for each episode and renders those episodes on the page.
+// takes a list of episodes, creates html tags for each episode and renders those episodes on the page.
 const makePageForEpisodes = (episodeList) => {
   listOfEpisodes.innerHTML = "";
   quantityOfEpisodes.innerHTML = `Displaying ${episodeList.length} of ${allEpisodes.length}`;
   for (let episode of episodeList) {
-    // if (episode.image == null) {
+    // if (episode.image == null || episode.summary == null) {
     //   continue;
     // }
     const episodeItem = document.createElement("div");
     episodeItem.className += "col item";
     const episodeContainer = document.createElement("div");
     episodeContainer.className += "p-3 h-100 inside";
-    const episodeInfo = document.createElement("h4");
-    episodeInfo.className += "episode-title";
+    const episodeTitle = document.createElement("h4");
+    episodeTitle.className += "episode-title";
 
-    // if (episode.number > 9) {
-    //   episodeInfo.innerText = `${episode.name} - S0${episode.season}E${episode.number}`;
-    // } else {
-    //   episodeInfo.innerText = `${episode.name} - S0${episode.season}E0${episode.number}`;
-    // }
+    if (episode.number > 9) {
+      episodeTitle.innerText = `${episode.name} - S0${episode.season}E${episode.number}`;
+    } else {
+      episodeTitle.innerText = `${episode.name} - S0${episode.season}E0${episode.number}`;
+    }
 
-    const episodeImage = document.createElement("img");
-    episodeImage.className += "episode-image";
-    episodeImage.src = episode.image?.medium;
+    // Creating episodeImage only if there is a valid episode.image
+    let episodeImage;
+    if (episode.image != null) {
+      episodeImage = document.createElement("img");
+      episodeImage.className += "episode-image";
+      episodeImage.src = episode.image.medium;
+    }
     const episodeSummary = document.createElement("div");
     episodeSummary.className += "episode-summary";
     episodeSummary.innerHTML = `${episode.summary}`;
 
     episodeItem.append(episodeContainer);
-    episodeContainer.append(episodeInfo, episodeImage, episodeSummary);
+    episodeContainer.append(episodeTitle);
+    if (episodeImage !== undefined) {
+      episodeContainer.append(episodeImage);
+    }
+    episodeContainer.append(episodeSummary);
     listOfEpisodes.append(episodeItem);
   }
 };
@@ -122,41 +125,44 @@ const makePageForEpisodes = (episodeList) => {
 
 // creates and adds options to <select> (selectEl) tag
 const renderEpisodeOptions = (episodeList) => {
-  const selectEl = document.querySelector("#select-episodes");
+  const episodeSelect = document.querySelector("#select-episodes");
   // show only chosen episode
-  selectEl.addEventListener("change", () => {
-    const value = selectEl.value;
-    const filteredEpisodes = allEpisodes.filter((episode) => {
-      return episode.name.includes(value);
-    });
+  episodeSelect.addEventListener("change", (event) => {
+    // const value = episodeSelect.value;
+    const episodeID = Number(event.target.value);
+    // console.log(`     here i am${episodeID}`);
+    const filteredEpisodes = episodeList.filter(
+      (episode) => episode.id === episodeID
+    );
 
     makePageForEpisodes(filteredEpisodes);
   });
 
-  selectEl.innerText = "";
+  episodeSelect.innerText = "";
 
   for (let episodeItem of episodeList) {
-    const option = document.createElement("option");
-    option.setAttribute("value", episodeItem.name);
+    const episodeOption = document.createElement("option");
+    episodeOption.setAttribute("value", episodeItem.id);
+    // episodeOption.setAttribute("id", episodeItem.id);
 
     const season = `${episodeItem.season}`.padStart(2, "0");
     const episode = `${episodeItem.number}`.padStart(2, "0");
-    option.innerText = `S${season}E${episode} - ${episodeItem.name}`;
-    selectEl.append(option);
+    episodeOption.innerText = `S${season}E${episode} - ${episodeItem.name}`;
+    episodeSelect.append(episodeOption);
   }
 };
 
 const renderShowOptions = (showList) => {
-  const selectEl = document.querySelector("#select-shows");
+  const showSelect = document.querySelector("#select-shows");
 
   for (let show of showList) {
-    const option = document.createElement("option");
-    option.setAttribute("value", show.id);
-    option.innerText = show.name;
-    selectEl.append(option);
+    const showOption = document.createElement("option");
+    showOption.setAttribute("value", show.id);
+    showOption.innerText = show.name;
+    showSelect.append(showOption);
   }
 
-  selectEl.addEventListener("change", (event) => {
+  showSelect.addEventListener("change", (event) => {
     const showID = event.target.value;
     const URL = generateUrl(showID);
     startFetching(URL);
