@@ -1,19 +1,23 @@
 // let showContainer;
 let shows = getAllShows();
-// let showID;
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul
 let allEpisodes;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
+
+const filteredShows = shows.sort((a, b) => a.name.localeCompare(b.name));
+//.map((show) => show.name).sort();
+
+console.log(filteredShows);
 
 const generateUrl = (id) => {
   return `https://api.tvmaze.com/shows/${id}/episodes`;
 };
 
 const setup = () => {
-  renderShowOptions(shows);
+  renderShowOptions(filteredShows);
   setupControls();
-  startFetching(generateUrl(shows[0].id));
+  startFetching(generateUrl(filteredShows[0].id));
 };
 
 const setupControls = () => {
@@ -153,7 +157,9 @@ const renderShowOptions = (showList) => {
   }
 
   selectEl.addEventListener("change", (event) => {
-    startFetching(generateUrl(event.target.value));
+    const showID = event.target.value;
+    const URL = generateUrl(showID);
+    startFetching(URL);
   });
 };
 
