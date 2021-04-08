@@ -1,4 +1,5 @@
 // let showContainer;
+let rootElem;
 let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul
@@ -11,13 +12,14 @@ const generateUrl = (id) => {
 
 const setup = () => {
   setupControls();
-  renderShowOptions(shows);
-  startFetching(generateUrl(shows[0].id));
+  renderAllShows(shows);
+  // renderShowOptions(shows);
+  // startFetching(generateUrl(shows[0].id));
 };
 
 const setupControls = () => {
   // create "containers" for episodes and append them to "root" element
-  const rootElem = document.getElementById("root");
+  rootElem = document.getElementById("root");
   // showContainer = document.createElement("div");
   episodesContainer = document.createElement("div");
   episodesContainer.className += "episodes-container container";
@@ -114,14 +116,91 @@ const makePageForEpisodes = (episodeList) => {
   }
 };
 
-// const renderShow = () => {
-//   const nameOfTheShow = document.createElement("h1");
-//   const showImage = document.createElement("img");
-//   nameOfTheShow.innerText = show.name;
-//   showImage.src = show.image.medium;
+const renderAllShows = (listOfShows) => {
+  const allShowsContainer = document.createElement("section");
+  allShowsContainer.setAttribute("id", "all-shows");
 
-//   showContainer.append(nameOfTheShow, showImage);
-// };
+  for (const show of listOfShows) {
+    const showContainer = document.createElement("article");
+    showContainer.className += "show";
+    showContainer.setAttribute("id", show.id);
+
+    const aboutShowContainer = document.createElement("div");
+    aboutShowContainer.className += "row about-show-container";
+
+    // title of the show
+    const showName = document.createElement("div");
+    showName.className += "show-name";
+    const showHeader = document.createElement("h1");
+    showHeader.innerText = show.name;
+    showName.append(showHeader);
+
+    // cover of the show
+    const showImageContainer = document.createElement("div");
+    showImageContainer.className += "col-md-3 col-12 show-image";
+    const showImage = document.createElement("img");
+    if (show.image == null) {
+      continue;
+    }
+    showImage.src = show.image.original;
+
+    showImageContainer.append(showImage);
+
+    // summary of the show
+    const showSummaryContainer = document.createElement("div");
+    showSummaryContainer.className += "col-md-3 col-12 show-summary";
+    showSummaryContainer.innerHTML = show.summary;
+
+    // details of the show
+    const showDetails = document.createElement("div");
+    showDetails.className += "col-md-3 col-12 show-details";
+
+    // const createPEl = ({
+    //   genres,
+    //   status,
+    //   rating: { average: rating },
+    //   runtime,
+    // }) => {
+    //   for (let i = 0; i < 4; i++) {
+    //     const p = document.createElement("p");
+    //     p.innerText = genres;
+
+    //     showDetails.append(p);
+    //   }
+    // };
+
+    // createPEl(show);
+
+    const {
+      genres,
+      status,
+      rating: { average: rating },
+      runtime,
+    } = show;
+
+    const genresP = document.createElement("p");
+    genresP.innerText = genres;
+    const statusP = document.createElement("p");
+    statusP.innerText = status;
+    const ratingP = document.createElement("p");
+    ratingP.innerText = rating;
+    const runtimeP = document.createElement("p");
+    runtimeP.innerText = runtime;
+
+    showDetails.append(genresP, statusP, ratingP, runtimeP);
+
+    showContainer.append(showName, aboutShowContainer);
+    aboutShowContainer.append(
+      showImageContainer,
+      showSummaryContainer,
+      showDetails
+    );
+
+    allShowsContainer.append(showContainer);
+  }
+
+  rootElem.appendChild(allShowsContainer);
+};
 
 // creates and adds options to <select> (selectEl) tag
 const renderEpisodeOptions = (episodeList) => {
@@ -130,7 +209,6 @@ const renderEpisodeOptions = (episodeList) => {
   episodeSelect.addEventListener("change", (event) => {
     // const value = episodeSelect.value;
     const episodeID = Number(event.target.value);
-    // console.log(`     here i am${episodeID}`);
     const filteredEpisodes = episodeList.filter(
       (episode) => episode.id === episodeID
     );
@@ -143,8 +221,6 @@ const renderEpisodeOptions = (episodeList) => {
   for (let episodeItem of episodeList) {
     const episodeOption = document.createElement("option");
     episodeOption.setAttribute("value", episodeItem.id);
-    // episodeOption.setAttribute("id", episodeItem.id);
-
     const season = `${episodeItem.season}`.padStart(2, "0");
     const episode = `${episodeItem.number}`.padStart(2, "0");
     episodeOption.innerText = `S${season}E${episode} - ${episodeItem.name}`;

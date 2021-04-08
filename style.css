@@ -31,3 +31,8 @@ li {
 .episode-title {
   padding: 1rem;
 }
+
+/* shows */
+.show-image > img {
+  width: 300px;
+}
