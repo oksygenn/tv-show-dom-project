@@ -1,5 +1,5 @@
-// let showContainer;
-let rootElem;
+let episodesRoot;
+let showsRoot;
 let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul
@@ -11,15 +11,15 @@ const generateUrl = (id) => {
 };
 
 const setup = () => {
-  setupControls();
+  setupEpisodesControls();
   renderAllShows(shows);
-  // renderShowOptions(shows);
-  // startFetching(generateUrl(shows[0].id));
+  renderShowOptions(shows);
+  startFetching(generateUrl(shows[0].id));
 };
 
-const setupControls = () => {
+const setupEpisodesControls = () => {
   // create "containers" for episodes and append them to "root" element
-  rootElem = document.getElementById("root");
+  episodesRoot = document.getElementById("episodes-root");
   // showContainer = document.createElement("div");
   episodesContainer = document.createElement("div");
   episodesContainer.className += "episodes-container container";
@@ -27,10 +27,10 @@ const setupControls = () => {
   listOfEpisodes = document.createElement("div");
   listOfEpisodes.className += "row row-cols-md-3 gx-5 list-of-episode";
   episodesContainer.append(listOfEpisodes);
-  rootElem.append(quantityOfEpisodes, episodesContainer);
+  episodesRoot.append(quantityOfEpisodes, episodesContainer);
 
-  // find user input and show all episodes if input field is empty (edge case)
-  const searchInput = document.querySelector("#site-search");
+  // find user input and show all episodes if input field is empty
+  const searchInput = document.querySelector("#episodes-search");
   searchInput.addEventListener("input", () => {
     const value = searchInput.value;
     if (value === "") {
@@ -39,20 +39,24 @@ const setupControls = () => {
     }
 
     // filter all episodes and show only the ones that include the same words as user input
-    const filteredList = allEpisodes.filter((episode) => {
-      return (
-        episode.name.toLowerCase().includes(value.toLowerCase()) ||
-        episode.summary.toLowerCase().includes(value.toLowerCase())
-      );
-    });
-
+    const filteredList = filterByUserInput(allEpisodes, value);
     makePageForEpisodes(filteredList);
   });
 
-  const showAllButton = document.querySelector("#show-all-episodes");
+  const showAllButton = document.querySelector("#episodes-show-all");
   showAllButton.addEventListener("click", () =>
     makePageForEpisodes(allEpisodes)
   );
+};
+
+// filters shows and episodes
+const filterByUserInput = (list, value) => {
+  return list.filter((element) => {
+    return (
+      element.name.toLowerCase().includes(value.toLowerCase()) ||
+      element.summary.toLowerCase().includes(value.toLowerCase())
+    );
+  });
 };
 
 const startFetching = (url) => {
@@ -102,28 +106,31 @@ const makePageForEpisodes = (episodeList) => {
       episodeImage.className += "episode-image";
       episodeImage.src = episode.image.medium;
     }
+
     const episodeSummary = document.createElement("div");
     episodeSummary.className += "episode-summary";
     episodeSummary.innerHTML = `${episode.summary}`;
 
     episodeItem.append(episodeContainer);
     episodeContainer.append(episodeTitle);
+
     if (episodeImage !== undefined) {
       episodeContainer.append(episodeImage);
     }
+
     episodeContainer.append(episodeSummary);
     listOfEpisodes.append(episodeItem);
   }
 };
 
 const renderAllShows = (listOfShows) => {
+  showsRoot = document.querySelector("#shows-root");
   const allShowsContainer = document.createElement("section");
   allShowsContainer.setAttribute("id", "all-shows");
 
   for (const show of listOfShows) {
     const showContainer = document.createElement("article");
     showContainer.className += "show";
-    showContainer.setAttribute("id", show.id);
 
     const aboutShowContainer = document.createElement("div");
     aboutShowContainer.className += "row about-show-container";
@@ -135,14 +142,17 @@ const renderAllShows = (listOfShows) => {
     showHeader.innerText = show.name;
     showName.append(showHeader);
 
+    showHeader.addEventListener("click", () => {
+      showid = show.id;
+      console.log("i was clicked");
+      startFetching(generateUrl(showid));
+    });
+
     // cover of the show
     const showImageContainer = document.createElement("div");
     showImageContainer.className += "col-md-3 col-12 show-image";
     const showImage = document.createElement("img");
-    if (show.image == null) {
-      continue;
-    }
-    showImage.src = show.image.original;
+    showImage.src = show.image?.medium;
 
     showImageContainer.append(showImage);
 
@@ -154,22 +164,6 @@ const renderAllShows = (listOfShows) => {
     // details of the show
     const showDetails = document.createElement("div");
     showDetails.className += "col-md-3 col-12 show-details";
-
-    // const createPEl = ({
-    //   genres,
-    //   status,
-    //   rating: { average: rating },
-    //   runtime,
-    // }) => {
-    //   for (let i = 0; i < 4; i++) {
-    //     const p = document.createElement("p");
-    //     p.innerText = genres;
-
-    //     showDetails.append(p);
-    //   }
-    // };
-
-    // createPEl(show);
 
     const {
       genres,
@@ -199,15 +193,14 @@ const renderAllShows = (listOfShows) => {
     allShowsContainer.append(showContainer);
   }
 
-  rootElem.appendChild(allShowsContainer);
+  showsRoot.appendChild(allShowsContainer);
 };
 
 // creates and adds options to <select> (selectEl) tag
 const renderEpisodeOptions = (episodeList) => {
-  const episodeSelect = document.querySelector("#select-episodes");
+  const episodeSelect = document.querySelector("#episodes-select");
   // show only chosen episode
   episodeSelect.addEventListener("change", (event) => {
-    // const value = episodeSelect.value;
     const episodeID = Number(event.target.value);
     const filteredEpisodes = episodeList.filter(
       (episode) => episode.id === episodeID
@@ -229,7 +222,7 @@ const renderEpisodeOptions = (episodeList) => {
 };
 
 const renderShowOptions = (showList) => {
-  const showSelect = document.querySelector("#select-shows");
+  const showSelect = document.querySelector("#shows-select");
 
   for (let show of showList) {
     const showOption = document.createElement("option");

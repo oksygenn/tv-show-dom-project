@@ -15,21 +15,31 @@
   </head>
 
   <body>
-    <div id="root">
+    <div id="shows-root" class="hidden">
       <div class="controls">
-        <select name="" id="select-shows"></select>
-        <select id="select-episodes">
+        <input type="text" id="shows-search" placeholder="Type something..." />
+        <select name="" id="shows-select"></select>
+      </div>
+    </div>
+
+    <div id="episodes-root">
+      <div class="controls">
+        <!-- <select name="" id="select-shows"></select> -->
+        <select id="episodes-select">
           <option value="" selected disabled>Find Episode</option>
         </select>
         <div>
-          <button id="show-all-episodes">Show all episodes</button>
-          <input type="text" id="site-search" placeholder="Type something..." />
+          <button id="episodes-show-all">Show all episodes</button>
+          <input
+            type="text"
+            id="episodes-search"
+            placeholder="Type something..."
+          />
         </div>
       </div>
     </div>
 
-    <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
-    <script src="episodes.js"></script>
+    <!-- <script src="episodes.js"></script> -->
     <script src="shows.js"></script>
 
     <!-- Loads YOUR javascript code -->

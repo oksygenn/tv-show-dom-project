@@ -36,3 +36,7 @@ li {
 .show-image > img {
   width: 300px;
 }
+
+.hidden {
+  display: none;
+}
