@@ -29,10 +29,15 @@ const setupEpisodesControls = () => {
   // create "containers" for episodes and append them to "root" element
   // showContainer = document.createElement("div");
   episodesContainer = document.createElement("div");
-  episodesContainer.className += "episodes-container container";
+  episodesContainer.classList.add("episodes-container", "container");
   quantityOfEpisodes = document.createElement("span");
   listOfEpisodes = document.createElement("div");
-  listOfEpisodes.className += "row row-cols-md-3 gx-5 list-of-episode";
+  listOfEpisodes.classList.add(
+    "row",
+    "row-cols-md-3",
+    "gx-5",
+    "list-of-episodes"
+  );
   episodesContainer.append(listOfEpisodes);
   episodesRoot.append(quantityOfEpisodes, episodesContainer);
 
@@ -102,11 +107,11 @@ const makePageForEpisodes = (episodeList) => {
     //   continue;
     // }
     const episodeItem = document.createElement("div");
-    episodeItem.className += "col item";
+    episodeItem.classList.add("col", "item");
     const episodeContainer = document.createElement("div");
-    episodeContainer.className += "p-3 h-100 inside";
+    episodeContainer.classList.add("p-3", "h-100", "inside");
     const episodeTitle = document.createElement("h4");
-    episodeTitle.className += "episode-title";
+    episodeTitle.classList.add("episode-title");
 
     if (episode.number > 9) {
       episodeTitle.innerText = `${episode.name} - S0${episode.season}E${episode.number}`;
@@ -118,12 +123,12 @@ const makePageForEpisodes = (episodeList) => {
     let episodeImage;
     if (episode.image != null) {
       episodeImage = document.createElement("img");
-      episodeImage.className += "episode-image";
+      episodeImage.classList.add("episode-image");
       episodeImage.src = episode.image.medium;
     }
 
     const episodeSummary = document.createElement("div");
-    episodeSummary.className += "episode-summary";
+    episodeSummary.classList.add("episode-summary");
     episodeSummary.innerHTML = `${episode.summary}`;
 
     episodeItem.append(episodeContainer);
@@ -144,25 +149,27 @@ const renderAllShows = (listOfShows) => {
 
   for (const show of listOfShows) {
     const showContainer = document.createElement("article");
-    showContainer.className += "show";
+    showContainer.classList.add("show");
 
     const aboutShowContainer = document.createElement("div");
-    aboutShowContainer.className += "row about-show-container";
+    aboutShowContainer.classList.add("row", "about-show-container");
 
     // title of the show
-    const showName = document.createElement("div");
-    showName.className += "show-name";
     const showHeader = document.createElement("h1");
-    showHeader.innerText = show.name;
-    showName.append(showHeader);
+    showHeader.classList.add("show-name");
+    const showHeaderLink = document.createElement("a");
+    showHeaderLink.href = "#";
+    showHeaderLink.innerText = show.name;
 
-    showHeader.addEventListener("click", () => {
+    showHeader.append(showHeaderLink);
+
+    showHeaderLink.addEventListener("click", () => {
       switchToEpisodesPage(show.id);
     });
 
     // cover of the show
     const showImageContainer = document.createElement("div");
-    showImageContainer.className += "col-md-3 col-12 show-image";
+    showImageContainer.classList.add("col-md-3", "col-12", "show-image");
     const showImage = document.createElement("img");
     showImage.src = show.image?.medium;
 
@@ -170,12 +177,12 @@ const renderAllShows = (listOfShows) => {
 
     // summary of the show
     const showSummaryContainer = document.createElement("div");
-    showSummaryContainer.className += "col-md-3 col-12 show-summary";
+    showSummaryContainer.classList.add("col-md-3", "col-12", "show-summary");
     showSummaryContainer.innerHTML = show.summary;
 
     // details of the show
     const showDetails = document.createElement("div");
-    showDetails.className += "col-md-3 col-12 show-details";
+    showDetails.classList.add("col-md-3", "col-12", "show-details");
 
     const {
       genres,
@@ -195,7 +202,7 @@ const renderAllShows = (listOfShows) => {
 
     showDetails.append(genresP, statusP, ratingP, runtimeP);
 
-    showContainer.append(showName, aboutShowContainer);
+    showContainer.append(showHeader, aboutShowContainer);
     aboutShowContainer.append(
       showImageContainer,
       showSummaryContainer,
