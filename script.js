@@ -2,7 +2,7 @@ let episodesRoot;
 let showsRoot;
 let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
 let episodesContainer; // <div> for all episodes (container)
-let listOfEpisodes; // ul
+let listOfEpisodes; // ul for episodes
 let allEpisodes;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
 
@@ -27,7 +27,6 @@ const switchToShowsPage = () => {
 
 const setupEpisodesControls = () => {
   // create "containers" for episodes and append them to "root" element
-  // showContainer = document.createElement("div");
   episodesContainer = document.createElement("div");
   episodesContainer.classList.add("episodes-container", "container");
   quantityOfEpisodes = document.createElement("span");
