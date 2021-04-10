@@ -6,20 +6,27 @@ let listOfEpisodes; // ul
 let allEpisodes;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
 
-const generateUrl = (id) => {
-  return `https://api.tvmaze.com/shows/${id}/episodes`;
-};
-
 const setup = () => {
+  episodesRoot = document.getElementById("episodes-root");
+  showsRoot = document.querySelector("#shows-root");
   setupEpisodesControls();
   renderAllShows(shows);
   renderShowOptions(shows);
-  startFetching(generateUrl(shows[0].id));
+};
+
+const switchToEpisodesPage = (showID) => {
+  showsRoot.classList.add("hidden");
+  episodesRoot.classList.remove("hidden");
+  fetchEpisodes(showID);
+};
+
+const switchToShowsPage = () => {
+  episodesRoot.classList.add("hidden");
+  showsRoot.classList.remove("hidden");
 };
 
 const setupEpisodesControls = () => {
   // create "containers" for episodes and append them to "root" element
-  episodesRoot = document.getElementById("episodes-root");
   // showContainer = document.createElement("div");
   episodesContainer = document.createElement("div");
   episodesContainer.className += "episodes-container container";
@@ -43,10 +50,17 @@ const setupEpisodesControls = () => {
     makePageForEpisodes(filteredList);
   });
 
+  // shows all episodes
   const showAllButton = document.querySelector("#episodes-show-all");
   showAllButton.addEventListener("click", () =>
     makePageForEpisodes(allEpisodes)
   );
+
+  // goes back to shows page
+  const backToShowsButton = document.querySelector("#back-button");
+  backToShowsButton.addEventListener("click", () => {
+    switchToShowsPage();
+  });
 };
 
 // filters shows and episodes
@@ -59,7 +73,8 @@ const filterByUserInput = (list, value) => {
   });
 };
 
-const startFetching = (url) => {
+const fetchEpisodes = (showID) => {
+  const url = `https://api.tvmaze.com/shows/${showID}/episodes`;
   fetch(url)
     .then((response) => {
       if (response.ok) {
@@ -124,7 +139,6 @@ const makePageForEpisodes = (episodeList) => {
 };
 
 const renderAllShows = (listOfShows) => {
-  showsRoot = document.querySelector("#shows-root");
   const allShowsContainer = document.createElement("section");
   allShowsContainer.setAttribute("id", "all-shows");
 
@@ -143,9 +157,7 @@ const renderAllShows = (listOfShows) => {
     showName.append(showHeader);
 
     showHeader.addEventListener("click", () => {
-      showid = show.id;
-      console.log("i was clicked");
-      startFetching(generateUrl(showid));
+      switchToEpisodesPage(show.id);
     });
 
     // cover of the show
@@ -233,8 +245,7 @@ const renderShowOptions = (showList) => {
 
   showSelect.addEventListener("change", (event) => {
     const showID = event.target.value;
-    const URL = generateUrl(showID);
-    startFetching(URL);
+    fetchEpisodes(showID);
   });
 };
 
