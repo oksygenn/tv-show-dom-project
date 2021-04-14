@@ -4,12 +4,14 @@ let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul for episodes
 let allEpisodes;
+let allShowsContainer;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
 
 const setup = () => {
   episodesRoot = document.getElementById("episodes-root");
   showsRoot = document.querySelector("#shows-root");
-  setupEpisodesControls();
+  setupShowsControls();
+  setupEpisodesScreen();
   renderAllShows(shows);
   renderShowOptions(shows);
 };
@@ -25,7 +27,7 @@ const switchToShowsPage = () => {
   showsRoot.classList.remove("hidden");
 };
 
-const setupEpisodesControls = () => {
+const setupEpisodesScreen = () => {
   // create "containers" for episodes and append them to "root" element
   episodesContainer = document.createElement("div");
   episodesContainer.classList.add("episodes-container", "container");
@@ -67,7 +69,7 @@ const setupEpisodesControls = () => {
   });
 };
 
-// filters shows and episodes
+// filters shows?? and episodes
 const filterByUserInput = (list, value) => {
   return list.filter((element) => {
     return (
@@ -143,8 +145,7 @@ const makePageForEpisodes = (episodeList) => {
 };
 
 const renderAllShows = (listOfShows) => {
-  const allShowsContainer = document.createElement("section");
-  allShowsContainer.setAttribute("id", "all-shows");
+  allShowsContainer.innerHTML = "";
 
   for (const show of listOfShows) {
     const showContainer = document.createElement("article");
@@ -210,8 +211,6 @@ const renderAllShows = (listOfShows) => {
 
     allShowsContainer.append(showContainer);
   }
-
-  showsRoot.appendChild(allShowsContainer);
 };
 
 // creates and adds options to <select> (selectEl) tag
@@ -253,6 +252,31 @@ const renderShowOptions = (showList) => {
     const showID = event.target.value;
     fetchEpisodes(showID);
   });
+};
+
+const setupShowsControls = () => {
+  const showsSearchInput = document.querySelector("#shows-search");
+  showsSearchInput.addEventListener("input", () => {
+    if (showsSearchInput.value === "") {
+      renderAllShows(shows);
+      return;
+    }
+
+    // const filteredShows = filterByUserInput(shows, showsSearchInput.value);
+    const value = showsSearchInput.value.toLowerCase();
+    const filteredShows = shows.filter((element) => {
+      return (
+        element.name.toLowerCase().includes(value) ||
+        element.summary.toLowerCase().includes(value) ||
+        element.genres.join(",").toLowerCase().includes(value)
+      );
+    });
+    renderAllShows(filteredShows);
+  });
+
+  allShowsContainer = document.createElement("section");
+  allShowsContainer.setAttribute("id", "all-shows");
+  showsRoot.appendChild(allShowsContainer);
 };
 
 window.onload = setup;
