@@ -240,6 +240,7 @@ const renderEpisodeOptions = (episodeList) => {
 
 const renderShowOptions = (showList) => {
   const showSelect = document.querySelector("#shows-select");
+  showSelect.innerHTML = "";
 
   for (let show of showList) {
     const showOption = document.createElement("option");
@@ -272,6 +273,7 @@ const setupShowsControls = () => {
       );
     });
     renderAllShows(filteredShows);
+    renderShowOptions(filteredShows);
   });
 
   allShowsContainer = document.createElement("section");
