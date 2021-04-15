@@ -122,9 +122,18 @@ const makePageForEpisodes = (episodeList) => {
 
     // Creating episodeImage only if there is a valid episode.image
     let episodeImage;
-    if (episode.image != null) {
-      episodeImage = document.createElement("img");
-      episodeImage.classList.add("episode-image");
+    // if (episode.image != null) {
+    //   episodeImage = document.createElement("img");
+    //   episodeImage.classList.add("episode-image");
+    //   episodeImage.src = episode.image.medium;
+    // }
+
+    episodeImage = document.createElement("img");
+    episodeImage.classList.add("episode-image");
+
+    if (episode.image == null || episode.image == undefined) {
+      episodeImage.src = "images/no-image-available-icon-vector.jpg";
+    } else {
       episodeImage.src = episode.image.medium;
     }
 
@@ -171,7 +180,13 @@ const renderAllShows = (listOfShows) => {
     const showImageContainer = document.createElement("div");
     showImageContainer.classList.add("col-md-3", "col-12", "show-image");
     const showImage = document.createElement("img");
-    showImage.src = show.image?.medium;
+
+    if (show.image == null) {
+      showImage.src = "images/no-image-available-icon-vector.jpg";
+    } else {
+      // episodeImage.src = episode.image.medium;
+      showImage.src = show.image.medium;
+    }
 
     showImageContainer.append(showImage);
 
