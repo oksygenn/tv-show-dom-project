@@ -69,7 +69,7 @@ const setupEpisodesScreen = () => {
   });
 };
 
-// filters shows?? and episodes
+// filters episodes
 const filterByUserInput = (list, value) => {
   return list.filter((element) => {
     return (
@@ -250,8 +250,9 @@ const renderShowOptions = (showList) => {
   }
 
   showSelect.addEventListener("change", (event) => {
-    const showID = event.target.value;
-    fetchEpisodes(showID);
+    const showID = Number(event.target.value);
+    const filteredShows = showList.filter((show) => show.id === showID);
+    renderAllShows(filteredShows);
   });
 };
 
