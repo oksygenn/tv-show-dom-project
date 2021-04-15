@@ -2,12 +2,12 @@
 let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul for episodes
-let allEpisodes;
+let allEpisodes = [];
 let allShowsContainer;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
 
 const setup = () => {
-  const { episodesRoot, showsRoot } = helper();
+  // const { episodesRoot, showsRoot } = helper();
   // episodesRoot = document.getElementById("episodes-root");
   // showsRoot = document.querySelector("#shows-root");
   setupShowsControls();
@@ -19,14 +19,50 @@ const setup = () => {
 const switchToEpisodesPage = (showID) => {
   const { showsRoot } = helper();
   showsRoot.classList.add("hidden");
+  const { episodesRoot } = helper();
   episodesRoot.classList.remove("hidden");
   fetchEpisodes(showID);
 };
 
 const switchToShowsPage = () => {
+  const { episodesRoot, showsRoot } = helper();
   episodesRoot.classList.add("hidden");
   showsRoot.classList.remove("hidden");
   renderAllShows(shows); // ????
+};
+
+// find user input and show all episodes if input field is empty
+// filter all episodes and show only the ones that include the same words as user input
+
+const manageEpisodesSearch = () => {
+  const searchInput = document.querySelector("#episodes-search");
+  searchInput.addEventListener("input", () => {
+    const value = searchInput.value;
+    if (value === "") {
+      makePageForEpisodes(allEpisodes);
+      return;
+    }
+
+    // filter all episodes and show only the ones that include the same words as user input
+    const filteredList = filterByUserInput(allEpisodes, value);
+    makePageForEpisodes(filteredList);
+  });
+};
+
+// shows all episodes
+const showAllEpisodes = () => {
+  const showAllButton = document.querySelector("#episodes-show-all");
+  showAllButton.addEventListener("click", () =>
+    makePageForEpisodes(allEpisodes)
+  );
+};
+
+// goes back to shows page
+const goBackToShowsPage = () => {
+  const backToShowsButton = document.querySelector("#back-button");
+  backToShowsButton.addEventListener("click", () => {
+    switchToShowsPage();
+  });
 };
 
 const setupEpisodesScreen = () => {
@@ -42,33 +78,13 @@ const setupEpisodesScreen = () => {
     "list-of-episodes"
   );
   episodesContainer.append(listOfEpisodes);
+
+  const { episodesRoot } = helper();
   episodesRoot.append(quantityOfEpisodes, episodesContainer);
 
-  // find user input and show all episodes if input field is empty
-  const searchInput = document.querySelector("#episodes-search");
-  searchInput.addEventListener("input", () => {
-    const value = searchInput.value;
-    if (value === "") {
-      makePageForEpisodes(allEpisodes);
-      return;
-    }
-
-    // filter all episodes and show only the ones that include the same words as user input
-    const filteredList = filterByUserInput(allEpisodes, value);
-    makePageForEpisodes(filteredList);
-  });
-
-  // shows all episodes
-  const showAllButton = document.querySelector("#episodes-show-all");
-  showAllButton.addEventListener("click", () =>
-    makePageForEpisodes(allEpisodes)
-  );
-
-  // goes back to shows page
-  const backToShowsButton = document.querySelector("#back-button");
-  backToShowsButton.addEventListener("click", () => {
-    switchToShowsPage();
-  });
+  manageEpisodesSearch();
+  showAllEpisodes();
+  goBackToShowsPage();
 };
 
 // filters episodes
@@ -296,6 +312,7 @@ const setupShowsControls = () => {
 
   allShowsContainer = document.createElement("section");
   allShowsContainer.setAttribute("id", "all-shows");
+  const { showsRoot } = helper();
   showsRoot.appendChild(allShowsContainer);
 };
 
