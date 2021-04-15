@@ -1,5 +1,4 @@
-let episodesRoot;
-let showsRoot;
+// let {showsRoot};
 let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
 let episodesContainer; // <div> for all episodes (container)
 let listOfEpisodes; // ul for episodes
@@ -8,8 +7,9 @@ let allShowsContainer;
 let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
 
 const setup = () => {
-  episodesRoot = document.getElementById("episodes-root");
-  showsRoot = document.querySelector("#shows-root");
+  const { episodesRoot, showsRoot } = helper();
+  // episodesRoot = document.getElementById("episodes-root");
+  // showsRoot = document.querySelector("#shows-root");
   setupShowsControls();
   setupEpisodesScreen();
   renderAllShows(shows);
@@ -17,6 +17,7 @@ const setup = () => {
 };
 
 const switchToEpisodesPage = (showID) => {
+  const { showsRoot } = helper();
   showsRoot.classList.add("hidden");
   episodesRoot.classList.remove("hidden");
   fetchEpisodes(showID);
@@ -25,6 +26,7 @@ const switchToEpisodesPage = (showID) => {
 const switchToShowsPage = () => {
   episodesRoot.classList.add("hidden");
   showsRoot.classList.remove("hidden");
+  renderAllShows(shows); // ????
 };
 
 const setupEpisodesScreen = () => {
@@ -153,6 +155,7 @@ const makePageForEpisodes = (episodeList) => {
   }
 };
 
+// how to not add show with the same name twice?????
 const renderAllShows = (listOfShows) => {
   allShowsContainer.innerHTML = "";
 
@@ -184,7 +187,6 @@ const renderAllShows = (listOfShows) => {
     if (show.image == null) {
       showImage.src = "images/no-image-available-icon-vector.jpg";
     } else {
-      // episodeImage.src = episode.image.medium;
       showImage.src = show.image.medium;
     }
 
@@ -228,12 +230,12 @@ const renderAllShows = (listOfShows) => {
   }
 };
 
-// creates and adds options to <select> (selectEl) tag
+// creates and adds options to <select> tag
 const renderEpisodeOptions = (episodeList) => {
   const episodeSelect = document.querySelector("#episodes-select");
   // show only chosen episode
   episodeSelect.addEventListener("change", (event) => {
-    const episodeID = Number(event.target.value);
+    const episodeID = Number(event.target.value); // <option> value
     const filteredEpisodes = episodeList.filter(
       (episode) => episode.id === episodeID
     );
