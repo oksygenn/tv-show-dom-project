@@ -19,6 +19,7 @@ li {
   box-shadow: -3px 6px 23px -8px rgba(127, 127, 127, 0.9);
 }
 
+/* episodes */
 .list-of-episodes {
   padding: 0;
   text-align: center;
@@ -30,6 +31,10 @@ li {
 
 .episode-title {
   padding: 1rem;
+}
+
+.episode-image {
+  width: 300px;
 }
 
 /* shows */

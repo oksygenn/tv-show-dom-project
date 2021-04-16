@@ -1,15 +1,7 @@
-// let {showsRoot};
 let shows = getAllShows().sort((a, b) => a.name.localeCompare(b.name)); // sorts shows in alphabetical order
-let episodesContainer; // <div> for all episodes (container)
-let listOfEpisodes; // ul for episodes
 let allEpisodes = [];
-let allShowsContainer;
-let quantityOfEpisodes; // <span> to show how many episodes are shown on the page
 
 const setup = () => {
-  // const { episodesRoot, showsRoot } = helper();
-  // episodesRoot = document.getElementById("episodes-root");
-  // showsRoot = document.querySelector("#shows-root");
   setupShowsControls();
   setupEpisodesScreen();
   renderAllShows(shows);
@@ -17,9 +9,8 @@ const setup = () => {
 };
 
 const switchToEpisodesPage = (showID) => {
-  const { showsRoot } = helper();
+  const { showsRoot, episodesRoot } = helper();
   showsRoot.classList.add("hidden");
-  const { episodesRoot } = helper();
   episodesRoot.classList.remove("hidden");
   fetchEpisodes(showID);
 };
@@ -31,10 +22,8 @@ const switchToShowsPage = () => {
   renderAllShows(shows); // ????
 };
 
-// find user input and show all episodes if input field is empty
-// filter all episodes and show only the ones that include the same words as user input
-
 const manageEpisodesSearch = () => {
+  // find user input and show all episodes if input field is empty
   const searchInput = document.querySelector("#episodes-search");
   searchInput.addEventListener("input", () => {
     const value = searchInput.value;
@@ -49,7 +38,7 @@ const manageEpisodesSearch = () => {
   });
 };
 
-// shows all episodes
+// displays all episodes on click of showAllButton
 const showAllEpisodes = () => {
   const showAllButton = document.querySelector("#episodes-show-all");
   showAllButton.addEventListener("click", () =>
@@ -57,7 +46,7 @@ const showAllEpisodes = () => {
   );
 };
 
-// goes back to shows page
+// goes back to "shows" page
 const goBackToShowsPage = () => {
   const backToShowsButton = document.querySelector("#back-button");
   backToShowsButton.addEventListener("click", () => {
@@ -66,22 +55,6 @@ const goBackToShowsPage = () => {
 };
 
 const setupEpisodesScreen = () => {
-  // create "containers" for episodes and append them to "root" element
-  episodesContainer = document.createElement("div");
-  episodesContainer.classList.add("episodes-container", "container");
-  quantityOfEpisodes = document.createElement("span");
-  listOfEpisodes = document.createElement("div");
-  listOfEpisodes.classList.add(
-    "row",
-    "row-cols-md-3",
-    "gx-5",
-    "list-of-episodes"
-  );
-  episodesContainer.append(listOfEpisodes);
-
-  const { episodesRoot } = helper();
-  episodesRoot.append(quantityOfEpisodes, episodesContainer);
-
   manageEpisodesSearch();
   showAllEpisodes();
   goBackToShowsPage();
@@ -90,6 +63,10 @@ const setupEpisodesScreen = () => {
 // filters episodes
 const filterByUserInput = (list, value) => {
   return list.filter((element) => {
+    if (element.summary == null || element.summary == undefined) {
+      element.summary = "No Description"; // NOT WORKING!!!
+      console.log(element.summary);
+    }
     return (
       element.name.toLowerCase().includes(value.toLowerCase()) ||
       element.summary.toLowerCase().includes(value.toLowerCase())
@@ -119,8 +96,9 @@ const fetchEpisodes = (showID) => {
 
 // takes a list of episodes, creates html tags for each episode and renders those episodes on the page.
 const makePageForEpisodes = (episodeList) => {
+  const { listOfEpisodes, displayingEpisodesSpan } = helper();
   listOfEpisodes.innerHTML = "";
-  quantityOfEpisodes.innerHTML = `Displaying ${episodeList.length} of ${allEpisodes.length}`;
+  displayingEpisodesSpan.innerHTML = `Displaying ${episodeList.length} of ${allEpisodes.length}`;
   for (let episode of episodeList) {
     // if (episode.image == null || episode.summary == null) {
     //   continue;
@@ -139,17 +117,17 @@ const makePageForEpisodes = (episodeList) => {
     }
 
     // Creating episodeImage only if there is a valid episode.image
-    let episodeImage;
     // if (episode.image != null) {
     //   episodeImage = document.createElement("img");
     //   episodeImage.classList.add("episode-image");
     //   episodeImage.src = episode.image.medium;
     // }
 
-    episodeImage = document.createElement("img");
+    // let episodeImage;
+    const episodeImage = document.createElement("img");
     episodeImage.classList.add("episode-image");
 
-    if (episode.image == null || episode.image == undefined) {
+    if (episode.image == null) {
       episodeImage.src = "images/no-image-available-icon-vector.jpg";
     } else {
       episodeImage.src = episode.image.medium;
@@ -162,9 +140,9 @@ const makePageForEpisodes = (episodeList) => {
     episodeItem.append(episodeContainer);
     episodeContainer.append(episodeTitle);
 
-    if (episodeImage !== undefined) {
-      episodeContainer.append(episodeImage);
-    }
+    // if (episodeImage !== undefined) {
+    episodeContainer.append(episodeImage);
+    // }
 
     episodeContainer.append(episodeSummary);
     listOfEpisodes.append(episodeItem);
@@ -173,6 +151,7 @@ const makePageForEpisodes = (episodeList) => {
 
 // how to not add show with the same name twice?????
 const renderAllShows = (listOfShows) => {
+  const { allShowsContainer } = helper();
   allShowsContainer.innerHTML = "";
 
   for (const show of listOfShows) {
@@ -291,6 +270,8 @@ const renderShowOptions = (showList) => {
 
 const setupShowsControls = () => {
   const showsSearchInput = document.querySelector("#shows-search");
+  // const { shows } = helper();
+
   showsSearchInput.addEventListener("input", () => {
     if (showsSearchInput.value === "") {
       renderAllShows(shows);
@@ -309,11 +290,6 @@ const setupShowsControls = () => {
     renderAllShows(filteredShows);
     renderShowOptions(filteredShows);
   });
-
-  allShowsContainer = document.createElement("section");
-  allShowsContainer.setAttribute("id", "all-shows");
-  const { showsRoot } = helper();
-  showsRoot.appendChild(allShowsContainer);
 };
 
 window.onload = setup;
