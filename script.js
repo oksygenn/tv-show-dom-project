@@ -28,26 +28,24 @@ const manageEpisodesSearch = () => {
   searchInput.addEventListener("input", () => {
     const value = searchInput.value;
     if (value === "") {
-      makePageForEpisodes(allEpisodes);
+      renderEpisodes(allEpisodes);
       return;
     }
 
     // filter all episodes and show only the ones that include the same words as user input
     const filteredList = filterByUserInput(allEpisodes, value);
-    makePageForEpisodes(filteredList);
+    renderEpisodes(filteredList);
   });
 };
 
-// displays all episodes on click of showAllButton
+// display all episodes on click of showAllButton
 const showAllEpisodes = () => {
   const showAllButton = document.querySelector("#episodes-show-all");
-  showAllButton.addEventListener("click", () =>
-    makePageForEpisodes(allEpisodes)
-  );
+  showAllButton.addEventListener("click", () => renderEpisodes(allEpisodes));
 };
 
-// goes back to "shows" page
-const goBackToShowsPage = () => {
+// go back to "shows" page
+const setupGoBackToShowsPageButton = () => {
   const backToShowsButton = document.querySelector("#back-button");
   backToShowsButton.addEventListener("click", () => {
     switchToShowsPage();
@@ -57,16 +55,12 @@ const goBackToShowsPage = () => {
 const setupEpisodesScreen = () => {
   manageEpisodesSearch();
   showAllEpisodes();
-  goBackToShowsPage();
+  setupGoBackToShowsPageButton();
 };
 
 // filters episodes
 const filterByUserInput = (list, value) => {
   return list.filter((element) => {
-    if (element.summary == null || element.summary == undefined) {
-      element.summary = "No Description"; // NOT WORKING!!!
-      console.log(element.summary);
-    }
     return (
       element.name.toLowerCase().includes(value.toLowerCase()) ||
       element.summary.toLowerCase().includes(value.toLowerCase())
@@ -86,7 +80,7 @@ const fetchEpisodes = (showID) => {
     })
     .then((episodes) => {
       allEpisodes = episodes;
-      makePageForEpisodes(episodes);
+      renderEpisodes(episodes);
       renderEpisodeOptions(episodes);
     })
     .catch((error) => {
@@ -95,14 +89,11 @@ const fetchEpisodes = (showID) => {
 };
 
 // takes a list of episodes, creates html tags for each episode and renders those episodes on the page.
-const makePageForEpisodes = (episodeList) => {
+const renderEpisodes = (episodeList) => {
   const { listOfEpisodes, displayingEpisodesSpan } = helper();
   listOfEpisodes.innerHTML = "";
   displayingEpisodesSpan.innerHTML = `Displaying ${episodeList.length} of ${allEpisodes.length}`;
   for (let episode of episodeList) {
-    // if (episode.image == null || episode.summary == null) {
-    //   continue;
-    // }
     const episodeItem = document.createElement("div");
     episodeItem.classList.add("col", "item");
     const episodeContainer = document.createElement("div");
@@ -116,35 +107,26 @@ const makePageForEpisodes = (episodeList) => {
       episodeTitle.innerText = `${episode.name} - S0${episode.season}E0${episode.number}`;
     }
 
-    // Creating episodeImage only if there is a valid episode.image
-    // if (episode.image != null) {
-    //   episodeImage = document.createElement("img");
-    //   episodeImage.classList.add("episode-image");
-    //   episodeImage.src = episode.image.medium;
-    // }
-
-    // let episodeImage;
     const episodeImage = document.createElement("img");
     episodeImage.classList.add("episode-image");
 
-    if (episode.image == null) {
-      episodeImage.src = "images/no-image-available-icon-vector.jpg";
-    } else {
-      episodeImage.src = episode.image.medium;
-    }
+    // if image is either null or undefined - show default image
+    // "?." - Optional chaining operator
+    // "??" - Nullish coalescing operator
+    episodeImage.src =
+      episode.image?.medium ?? "images/no-image-available-icon-vector.jpg";
 
     const episodeSummary = document.createElement("div");
     episodeSummary.classList.add("episode-summary");
-    episodeSummary.innerHTML = `${episode.summary}`;
+
+    if (episode.summary == null || episode.summary === "") {
+      episodeSummary.innerHTML = "No description provided";
+    } else {
+      episodeSummary.innerHTML = episode.summary;
+    }
 
     episodeItem.append(episodeContainer);
-    episodeContainer.append(episodeTitle);
-
-    // if (episodeImage !== undefined) {
-    episodeContainer.append(episodeImage);
-    // }
-
-    episodeContainer.append(episodeSummary);
+    episodeContainer.append(episodeTitle, episodeImage, episodeSummary);
     listOfEpisodes.append(episodeItem);
   }
 };
@@ -235,7 +217,7 @@ const renderEpisodeOptions = (episodeList) => {
       (episode) => episode.id === episodeID
     );
 
-    makePageForEpisodes(filteredEpisodes);
+    renderEpisodes(filteredEpisodes);
   });
 
   episodeSelect.innerText = "";
@@ -270,7 +252,6 @@ const renderShowOptions = (showList) => {
 
 const setupShowsControls = () => {
   const showsSearchInput = document.querySelector("#shows-search");
-  // const { shows } = helper();
 
   showsSearchInput.addEventListener("input", () => {
     if (showsSearchInput.value === "") {
@@ -278,7 +259,6 @@ const setupShowsControls = () => {
       return;
     }
 
-    // const filteredShows = filterByUserInput(shows, showsSearchInput.value);
     const value = showsSearchInput.value.toLowerCase();
     const filteredShows = shows.filter((element) => {
       return (
