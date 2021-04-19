@@ -11,18 +11,17 @@ li {
   justify-content: center;
 }
 
-.item {
-  padding: 2rem;
-}
-
-.inside {
-  box-shadow: -3px 6px 23px -8px rgba(127, 127, 127, 0.9);
-}
-
 /* episodes */
 .list-of-episodes {
   padding: 0;
   text-align: center;
+}
+
+.episode-item {
+  padding: 2rem;
+}
+.episode-inside {
+  box-shadow: -3px 6px 23px -8px rgba(127, 127, 127, 0.9);
 }
 
 .episode-summary {

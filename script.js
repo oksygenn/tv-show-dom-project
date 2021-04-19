@@ -93,11 +93,12 @@ const renderEpisodes = (episodeList) => {
   const { listOfEpisodes, displayingEpisodesSpan } = helper();
   listOfEpisodes.innerHTML = "";
   displayingEpisodesSpan.innerHTML = `Displaying ${episodeList.length} of ${allEpisodes.length}`;
+
   for (let episode of episodeList) {
     const episodeItem = document.createElement("div");
-    episodeItem.classList.add("col", "item");
+    episodeItem.classList.add("col", "episode-item");
     const episodeContainer = document.createElement("div");
-    episodeContainer.classList.add("p-3", "h-100", "inside");
+    episodeContainer.classList.add("p-3", "h-100", "episode-inside");
     const episodeTitle = document.createElement("h4");
     episodeTitle.classList.add("episode-title");
 
